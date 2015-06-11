@@ -1,0 +1,9 @@
+*.pyc
+*.csv
+*.swp
+*.sublime-workspace
+*.sublime-project
+*.pdf
+*.png
+*.ipynb_checkpoints
+*.svg
