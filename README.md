@@ -35,6 +35,7 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
     - `time_frequency_mean_across_channels.ipynb`: Perform time-frequency analysis on the mean across channels for a given dataset. 
     - `contrast_motor_start_vs_stop.ipynb`: Perform a time-frequency analysis of the contrast between identical motor movements at trial start and trial stop.
     - `contrast_reward_vs_no_reward.ipynb`: Perform a time-frequency analysis of the contrasts between rewarded (stop) and unrewarded (pop and control) trials.
+    - `time_frequency_phase_analysis.ipynb` and `time_frequency_phase_amplitude_coupling.ipynb`: Phase and phase-amplitude coupling analysis for the LFP data.
 
 ## Dependencies
 
