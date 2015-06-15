@@ -36,6 +36,7 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
     - `contrast_motor_start_vs_stop.ipynb`: Perform a time-frequency analysis of the contrast between identical motor movements at trial start and trial stop.
     - `contrast_reward_vs_no_reward.ipynb`: Perform a time-frequency analysis of the contrasts between rewarded (stop) and unrewarded (pop and control) trials.
     - `time_frequency_phase_analysis.ipynb` and `time_frequency_phase_amplitude_coupling.ipynb`: Phase and phase-amplitude coupling analysis for the LFP data.
+    - `LFP_classifier_data.ipynb`: Fit a sparse logistic classifier to LFP data for a single dataset.
 
 ## Dependencies
 
@@ -48,5 +49,6 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
 
 ### Python
 - numpy, scipy, matplotlib, pandas
+- seaborn (for plotting)
 - rpy2 (for R &harr; Python connection)
 - physutils (available [here](https://github.com/jmxpearson/physutils))
