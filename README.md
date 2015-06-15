@@ -29,6 +29,7 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
 - __LFP Analysis__: Analysis of local field potential data is contained in the following notebooks:
     - `plot_channel_traces.ipynb`: Plots power in different frequency bands, by channel and normed across channels, aligned to trial start and stop, for a given dataset.
     - `plot_channel_traces_by_factor.ipynb`: Plots LFP power across frequency bands, broken out by risk level.
+    - `test_integration_activity.ipynb`: Performs a median split on LFP activity near trial stop and start and tests for statistically significant increases in power over time.
 
 
 ## Dependencies
