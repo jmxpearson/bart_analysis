@@ -26,6 +26,11 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
     - `analyze_spike_glm_output.R`: Takes csv files output by the glm analysis and produces tables of coefficients and plots.
     - `helpers.R` and `setup_env.R` contain helper functions, package loads, and relevant constants.
 
+- __LFP Analysis__: Analysis of local field potential data is contained in the following notebooks:
+    - `plot_channel_traces.ipynb`: Plots power in different frequency bands, by channel and normed across channels, aligned to trial start and stop, for a given dataset.
+    - `plot_channel_traces_by_factor.ipynb`: Plots LFP power across frequency bands, broken out by risk level.
+
+
 ## Dependencies
 
 ### R
