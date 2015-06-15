@@ -16,8 +16,15 @@ Data are available [here](TBD). The data are in a single HDF5 file with top-leve
 Within the last three directories, the data are organized hierarchically by patient, dataset, channel, and unit (in the case of spikes) and by patient/dataset/unit for LFP and censoring.
 
 ## Analysis:
-- __Behavior Analysis__:
-- __Spike Analysis__:
+Analyses in the paper each correspond to one or more iPython notebooks. Other code is contained in scripts, as detailed below.
+
+- __Behavior Analysis__: Behavioral analyses are presented in `behavior_analysis.ipynb`. 
+
+- __Spike Analysis__: Analysis of spike data is in `spike_analysis.ipynb`. This code calls several other pieces, including:
+    - `prep_spike_data.py`: makes regressors for the firing rate model. This is only run if `reprep_data` is set to `True` at the top of the notebook. If the variable is `False`, the code expects to find `data/spkfitdata`.
+    - `perform_glm_analysis.R`: runs the elastic net GLM on data for each unit. Outputs csv files of results in the form `&lt;patient&gt;.&lt;dataset&gt;.&lt;channel&gt;.&lt;unit&gt;.spkglmdata.csv`.
+    - `analyze_spike_glm_output.R`: Takes csv files output by the glm analysis and produces tables of coefficients and plots.
+    - `helpers.R` and `setup_env.R` contain helper functions, package loads, and relevant constants.
 
 ## Dependencies
 
