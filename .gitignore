@@ -6,4 +6,4 @@
 *.png
 *.ipynb_checkpoints
 *.svg
-!data/*.csv
+data
