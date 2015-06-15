@@ -36,7 +36,7 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
     - `contrast_motor_start_vs_stop.ipynb`: Perform a time-frequency analysis of the contrast between identical motor movements at trial start and trial stop.
     - `contrast_reward_vs_no_reward.ipynb`: Perform a time-frequency analysis of the contrasts between rewarded (stop) and unrewarded (pop and control) trials.
     - `time_frequency_phase_analysis.ipynb` and `time_frequency_phase_amplitude_coupling.ipynb`: Phase and phase-amplitude coupling analysis for the LFP data.
-    - `LFP_classifier_data.ipynb`: Fit a sparse logistic classifier to LFP data for a single dataset.
+    - `LFP_classifier_data.ipynb`: Fit a sparse logistic classifier to LFP data for a single dataset. (A similar analysis can be performed in batch using `prep_classifier_data.py`, `perform_glm_analysis.R`, and `analyze_lfp_glm_output.R`.)
     - `LFP_wavelet_classifier.ipynb`: Fit a sparse logistic classifier based on wavelet features instead of frequency bands. __Requires PyWavelets.__
 
 ## Dependencies
