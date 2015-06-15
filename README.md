@@ -32,6 +32,7 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
     - `test_integration_activity.ipynb`: Performs a median split on LFP activity near trial stop and start and tests for statistically significant increases in power over time.
     - `plot_LFP_channel_raster.ipynb`: Plot power for a single channel, single frequency band for each trial in a rastergram-type plot.
     - `channel_correlation_clustering.ipynb`: Attempt to cluster channels together based on correlations among them.
+    - `time_frequency_mean_across_channels.ipynb`: Perform time-frequency analysis on the mean across channels for a given dataset. 
 
 ## Dependencies
 
