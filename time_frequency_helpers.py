@@ -39,8 +39,6 @@ def avg_time_freq_arrays(dataframe, times, Tpre, Tpost,
     spectra = None
 
     for chan, series in dataframe.iteritems():
-        if chan > 18:
-            continue
         # get time-frequency matrix for each event
         this_spec0, taxis, faxis = tf._per_event_time_frequency(series,
             callback, times[0], Tpre_x, Tpost_x, complete_only=False, **kwargs)
