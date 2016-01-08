@@ -19,7 +19,7 @@ def load_and_preprocess(dbname, dtup):
     if lfp.meta['sr'] != standard_sr:
         dt = 1/standard_sr
         T0, Tf = lfp.index[0], lfp.index[-1]
-        tnew = np.arange(T0, Tf + dt, dt)
+        tnew = np.arange(T0, Tf, dt)
         f = lambda x: interp1d(lfp.index, x)(tnew)
         new_lfp = pd.DataFrame(np.apply_along_axis(f, 0, lfp.dataframe.values),
                               index=tnew, columns=lfp.columns)
