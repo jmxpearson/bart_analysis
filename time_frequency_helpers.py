@@ -5,6 +5,7 @@ import physutils.bootstrap as boot
 import physutils.tf as tf
 import matplotlib.pyplot as plt
 import dbio
+from scipy.interpolate import interp1d
 
 def load_and_preprocess(dbname, dtup):
     """
@@ -12,6 +13,17 @@ def load_and_preprocess(dbname, dtup):
     """
     # load data
     lfp = dbio.fetch_all_such_LFP(dbname, *dtup)
+
+    # handle FHC recordings
+    standard_sr = 200.
+    if lfp.meta['sr'] != standard_sr:
+        dt = 1/standard_sr
+        T0, Tf = lfp.index[0], lfp.index[-1]
+        tnew = np.arange(T0, Tf + dt, dt)
+        f = lambda x: interp1d(lfp.index, x)(tnew)
+        new_lfp = pd.DataFrame(np.apply_along_axis(f, 0, lfp.dataframe.values),
+                              index=tnew, columns=lfp.columns)
+        lfp = phys.LFPset(new_lfp)
 
     # censor and robustly zscore
     lfpmz = lfp.censor().rzscore()
