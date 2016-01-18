@@ -1,18 +1,18 @@
-fit_all_and_save <- function(filext, outname, family, datalist, measure, lambdatype, shuffle=FALSE) {
+fit_all_and_save <- function(filext, outname, family, datalist, measure, lambdatype, shuffle=FALSE, nfolds=10) {
   fitobjs <- list()
   for (ind in 1:dim(datalist)[1]) {
     fname <- paste(paste(datalist[ind,], collapse='.'), filext, sep='.')
     dfile <- paste(ddir, fname, sep='/')
     print(dfile)
     dat <- read.table(dfile, sep=',', header=TRUE, row.names=1, colClasses=c('numeric'))
-    thisfit <- run_glm(dat, family, measure, lambdatype, shuffle)
+    thisfit <- run_glm(dat, family, measure, lambdatype, shuffle, nfolds)
     fitobjs[[ind]] <- thisfit
   }
 
   save(fitobjs, file=paste(ddir, outname, sep='/'))
 }
 
-run_glm <- function(dframe, type='binomial', measure="deviance", lambdatype='1se', shuffle=FALSE){
+run_glm <- function(dframe, type='binomial', measure="deviance", lambdatype='1se', shuffle=FALSE, nfolds=10){
   # given an input data frame, perform an elastic net regression
   # on the data contained therein
 
@@ -25,15 +25,15 @@ run_glm <- function(dframe, type='binomial', measure="deviance", lambdatype='1se
   allobjs = list()
   alphalist = seq(0.1, 1, 0.1)
 
-  folds <- partition_data(y, nfolds=10)
+  folds <- partition_data(y, nfolds=nfolds)
 
   # loop over alpha values
   for (alpha in alphalist) {
     # run sparse regression
-    # don't include constant in X; glmnet will fit an intercept, 
+    # don't include constant in X; glmnet will fit an intercept,
     # but if we supply
     # one manually, it will be penalized, which we don't want
-    glmobj <- cv.glmnet(data.matrix(X), y, alpha = alpha, family = type, 
+    glmobj <- cv.glmnet(data.matrix(X), y, alpha = alpha, family = type,
                         foldid = folds, intercept = TRUE, type.measure = measure)
 
     # pull out regression coefficients for best model using different
@@ -98,14 +98,14 @@ get_best_beta <- function(glmobj, lambdatype) {
 }
 
 get_best_alpha <- function(objlist, alphalist) {
-  # given a list of objects returned by get_best_beta and a list of alpha 
+  # given a list of objects returned by get_best_beta and a list of alpha
   # values, return the object corresponding to the highest score
   measure_type <- tolower(objlist[[1]]$glmobj$name)
   if (grepl('auc', measure_type)) {
     extract_best <- which.max
   } else {
     extract_best <- which.min
-  } 
+  }
 
   scorelist <- sapply(objlist, function(x) {x$score})
   best_ind <- extract_best(scorelist)  # if using auc, want max score

@@ -9,11 +9,12 @@ shuffle <- FALSE
 if (args[1] == 'lfp') {
     print("Performing LFP analysis...")
     filext <- 'lfpglmdata.csv'
-    outname <- 'lfpfitdata' 
+    outname <- 'lfpfitdata'
     family <- 'binomial'
     datalist <- chanlist
     measure <- 'auc'
     lambdatype <- '1se'
+    nfolds <- 5
 } else if (args[1] == 'spikes') {
     print("Performing spike analysis...")
     filext <- 'spkglmdata.csv'
@@ -22,6 +23,7 @@ if (args[1] == 'lfp') {
     datalist <- unitlist
     measure <- 'deviance'
     lambdatype <- c('1se', 'min', 'none')
+    nfolds <- 10
 }
 
 if (length(args) > 1) {
@@ -31,4 +33,4 @@ if (length(args) > 1) {
     }
 }
 
-fit_all_and_save(filext, outname, family, datalist, measure, lambdatype, shuffle)
+fit_all_and_save(filext, outname, family, datalist, measure, lambdatype, shuffle, nfolds)
