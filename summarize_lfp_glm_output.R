@@ -35,4 +35,5 @@ for (ind in seq_along(fitobjs)) {
     fit_table <- rbind(fit_table, sdf)
 }
 
-# fit_table <- bind_rows(summaries)
+write.csv(fit_table, file=paste(ddir, 'lfpfitsummary.csv', sep='/'),
+          row.names=FALSE)
