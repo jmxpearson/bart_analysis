@@ -19,13 +19,13 @@ dev.off()
 df <- extract_coeffs(fitobjs[[ind]])
 
 # now reorder channels based on hierarchical clustering
-coef_grid <- cast(df, channel ~ band)
+coef_grid <- spread(df, band, value)
 dend <- hclust(sign_neutral_dist(coef_grid[, -1]))
-df$channel <- factor(df$channel, levels=levels(df$channel)[dend$order])
 
 # useful summary stats
-band_stats <- ddply(df, ~band, summarize, mean = mean(value), 
-    mean_abs = mean(abs(value)), std = sd(value), std_abs = sd(abs(value)))
+band_stats <- df %>% group_by(band) %>%
+    summarise(mean=mean(value), mean_abs=mean(abs(value)), std=sd(value),
+              std_abs=sd(abs(value)))
 
 pdf(file='lfp_coeff_grid.pdf', paper='USr', width=11, height=8.5)
 plt <- plot_lfp_coefficient_grid(df)

@@ -1,11 +1,12 @@
 # load up useful vars
 source('helpers.R')
+library(plyr)
 
 # load analysis output
 load(file=paste(ddir, 'spkfitdata', sep='/'))
 
 ######## code to plot heatmap of regression coefficients ##########
-if (exists('lambdatype') == FALSE) lambdatype <- 1 
+if (exists('lambdatype') == FALSE) lambdatype <- 1
 
 pullbetas <- function(x) {
     # grab betas from each unit's fit object

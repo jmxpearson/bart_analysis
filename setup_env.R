@@ -15,5 +15,5 @@ unitlist <- read.csv(paste(adir, cfile, sep='/'), header=FALSE)
 
 suppressMessages(library(glmnet))
 suppressMessages(library(ggplot2))
-suppressMessages(library(plyr))
-suppressMessages(library(reshape))
+suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
