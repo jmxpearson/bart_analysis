@@ -18,6 +18,14 @@ dev.off()
 ######## code to plot heatmap of regression coefficients ##########
 df <- extract_coeffs(fitobjs[[ind]])
 
+# plot glm object
+pdf(file='lfp_auc_plot.pdf', paper='USr', width=11, height=8.5)
+plt <- fitobjs[[ind]]$glmobj
+par(pin = c(6, 5), cex=1.5)
+plot(plt)
+dev.off()
+
+
 # now reorder channels based on hierarchical clustering
 coef_grid <- spread(df, band, value)
 dend <- hclust(sign_neutral_dist(coef_grid[, -1]))
@@ -27,7 +35,7 @@ band_stats <- df %>% group_by(band) %>%
     summarise(mean=mean(value), mean_abs=mean(abs(value)), std=sd(value),
               std_abs=sd(abs(value)))
 
-pdf(file='lfp_coeff_grid.pdf', paper='USr', width=11, height=8.5)
+pdf(file='lfp_coeff_grid.pdf', paper='USr', width=8.5, height=8.5)
 plt <- plot_lfp_coefficient_grid(df)
 print(plt)
 dev.off()
