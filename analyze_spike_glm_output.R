@@ -1,6 +1,5 @@
 # load up useful vars
 source('helpers.R')
-library(plyr)
 
 # load analysis output
 load(file=paste(ddir, 'spkfitdata', sep='/'))
@@ -21,10 +20,10 @@ pullbetas <- function(x) {
     }
 }
 
-betas <- ldply(fitobjs, .fun = pullbetas)
+betas <- do.call(bind_rows, lapply(fitobjs, FUN=pullbetas))
 effects <- exp(betas) * 100 - 100
 effects <- cbind(data.frame(unit=1:dim(effects)[1]), effects)
-df <- melt(effects, id.vars=c('unit'))
+df <- gather(effects, variable, value, -unit)
 
 plt <- plot_spike_coefficient_grid(df)
 print(plt)
