@@ -7,6 +7,11 @@ import matplotlib.pyplot as plt
 import dbio
 from scipy.interpolate import interp1d
 
+# for plotting, we will flip decreasers
+increasers = [(11, 1), (12, 1), (14, 2), (15, 1), (16, 2), (17, 1), (17, 2),
+              (18, 1), (22, 1), (24, 1), (25, 1), (30, 1)]
+decreasers = [(14, 1), (16, 1), (20, 1), (21, 1), (23, 1)]
+
 def load_and_preprocess(dbname, dtup):
     """
     Load and preprocess LFP data.
@@ -185,6 +190,9 @@ def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, no
                                 Tpre, Tpost,
                                 method='wav', normfun=normfun, freqs=freqs)
 
+            if dtup in decreasers:
+                this_spectra = [-s for s in this_spectra]
+                
             spectra_list.append(this_spectra)
             labels_list.append(this_labels)
 
