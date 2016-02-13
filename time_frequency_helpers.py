@@ -154,11 +154,26 @@ def trials_to_clusters(spectra, alllabels, thresh, taxis, Tpre, Tpost,
 
     return mcontrast[to_return], taxis[to_return]
 
-def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, normfun):
-    spectra_list = []
-    labels_list = []
+class Normalizer:
+    """
+    This class mimics norm_by_mean in physutils/core.py, but is serializable
+    by pickle and so suitable for multiprocessing.
+    """
+    def __init__(self, timetuple, method='division'):
+        self.timetuple = timetuple
+        self.method = method
 
-    for dtup in tuplist:
+    def __call__(self, framelist):
+        all_baselines = map(lambda df: df[slice(*self.timetuple)].mean(), framelist)
+        mean_baseline = reduce(lambda x, y: x.add(y, fill_value=0), all_baselines) / len(framelist)
+        if self.method == 'division':
+            return map(lambda x: x.div(mean_baseline), framelist)
+        elif self.method == 'subtraction':
+            return map(lambda x: x - mean_baseline, framelist)
+
+def worker(arguments):
+        dbname, event_labels, Tpre, Tpost, freqs, normfun = arguments[:6]
+        dtup = arguments[6:]
         print dtup
 
         lfp = load_and_preprocess(dbname, dtup)
@@ -192,9 +207,20 @@ def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, no
 
             if dtup in decreasers:
                 this_spectra = [-s for s in this_spectra]
-                
-            spectra_list.append(this_spectra)
-            labels_list.append(this_labels)
+
+        return this_spectra, this_labels
+
+
+def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, normfun):
+
+    from multiprocessing import Pool
+    pool = Pool()
+    context_vars = dbname, event_labels, Tpre, Tpost, freqs, normfun
+
+    tups = [context_vars + dtup for dtup in tuplist]
+
+    outputs = pool.map(worker, tups)
+    spectra_list, labels_list = zip(*outputs)
 
     spectra = np.concatenate(spectra_list)
     labels = np.concatenate(labels_list)
