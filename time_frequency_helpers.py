@@ -208,7 +208,7 @@ def worker(arguments):
             if dtup in decreasers:
                 this_spectra = [-s for s in this_spectra]
 
-        return this_spectra, this_labels
+        return this_spectra, this_labels, taxis, faxis
 
 
 def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, normfun):
@@ -220,10 +220,12 @@ def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, no
     tups = [context_vars + dtup for dtup in tuplist]
 
     outputs = pool.map(worker, tups)
-    spectra_list, labels_list = zip(*outputs)
+    spectra_list, labels_list, taxis_list, faxis_list = zip(*outputs)
 
     spectra = np.concatenate(spectra_list)
     labels = np.concatenate(labels_list)
+    taxis = taxis_list[0]
+    faxis = faxis_list[0]
 
     return spectra, labels, taxis, faxis
 
