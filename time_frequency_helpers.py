@@ -40,8 +40,7 @@ def avg_time_freq_arrays(dataframe, times, Tpre, Tpost,
     """
     Stolen and modified from physutils.bootstrap.py.
     Splits a dataframe around index values in iterable times and
-    returns a time-frequency matrix for each event, averaged across
-    dataframe channels (columns).
+    returns a time-frequency matrix for each event, averaged across channels.
     """
     if method == 'wav':
         callback = tf.continuous_wavelet
@@ -68,15 +67,15 @@ def avg_time_freq_arrays(dataframe, times, Tpre, Tpost,
             spectra = this_spectra[:]
         else:
             for idx, ts in enumerate(this_spectra):
+                # accumulate spectra over trials
                 spectra[idx] += ts
 
+    # convert from dataframes to ndarrays
+    spectra = [s.values/nchan for s in spectra]
 
     # normalize
     if normfun:
         spectra = normfun(spectra)
-
-    # convert from dataframes to ndarrays
-    spectra = [s.values/nchan for s in spectra]
 
     # make a dataframe containing all times, labeled by event type
     labels0 = np.zeros((len(times[0]),))
