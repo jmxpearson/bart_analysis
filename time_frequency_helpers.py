@@ -194,6 +194,10 @@ def worker(arguments):
             evtdict['stops_rewarded'] = evtdict['stops']
             evtdict['stops_unrewarded'] = None
 
+        this_spectra = []
+        this_labels = []
+        taxis = None
+        faxis = None
         if evtdict[event_labels[0]] is None:
             print "Dataset {} has no events of type {}".format(dtup, event_labels[0])
         elif evtdict[event_labels[1]] is None:
@@ -223,8 +227,8 @@ def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, no
 
     spectra = np.concatenate(spectra_list)
     labels = np.concatenate(labels_list)
-    taxis = taxis_list[0]
-    faxis = faxis_list[0]
+    taxis = next(item for item in taxis_list if item is not None)
+    faxis = next(item for item in faxis_list if item is not None)
 
     return spectra, labels, taxis, faxis
 
