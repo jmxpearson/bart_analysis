@@ -70,12 +70,12 @@ def avg_time_freq_arrays(dataframe, times, Tpre, Tpost,
                 # accumulate spectra over trials
                 spectra[idx] += ts
 
-    # convert from dataframes to ndarrays
-    spectra = [s.values/nchan for s in spectra]
-
     # normalize
     if normfun:
         spectra = normfun(spectra)
+
+    # convert from dataframes to ndarrays
+    spectra = [s.values/nchan for s in spectra]
 
     # make a dataframe containing all times, labeled by event type
     labels0 = np.zeros((len(times[0]),))
@@ -223,6 +223,9 @@ def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, no
     tups = [context_vars + dtup for dtup in tuplist]
 
     outputs = pool.map(worker, tups)
+
+    # remove outputs with empty spectra
+    outputs = filter(lambda x: len(x[0]) > 0, outputs)
     spectra_list, labels_list, taxis_list, faxis_list = zip(*outputs)
 
     spectra = np.concatenate(spectra_list)
