@@ -128,7 +128,26 @@ for name, grp in groups:
     meanpwr = pd.rolling_mean(groupdata.dataframe,
         np.ceil(Tpre / dt), min_periods=1)
     meanpwr.index = np.around(meanpwr.index / dt) * dt  # round index to nearest dt
-    tset = pd.concat([allevt, meanpwr], axis=1, join='inner')
+
+    # make interaction terms and squares
+    int_terms = []
+    for i in range(len(meanpwr.columns)):
+        for j in range(i + 1):
+            if i == j:
+                col = meanpwr.iloc[:, i] ** 2
+                band, chan = col.name.split('.')
+                col.name = "{}.{}.{}.{}".format(band, chan, band, chan)
+            else:
+                icol = meanpwr.iloc[:, i]
+                jcol = meanpwr.iloc[:, j]
+                col = icol * jcol
+                iband, ichan = icol.name.split('.')
+                jband, jchan = jcol.name.split('.')
+                col.name = "{}.{}.{}.{}".format(iband, ichan, jband, jchan)
+
+            int_terms.append(col)
+
+    tset = pd.concat([allevt, meanpwr] + int_terms, axis=1, join='inner')
     tset = tset.dropna()  # can't send glmnet any row with a NaN
 
     # write out

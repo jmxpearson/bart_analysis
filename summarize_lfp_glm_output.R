@@ -14,10 +14,16 @@ for (ind in seq_along(fitobjs)) {
 
     # get summaries
     # number of nonzero entries for each band
-    sdf <- df %>% group_by(band) %>%
+    sdf <- df %>% filter(is.na(band2)) %>%
+                  group_by(band) %>%
                   summarise(dataset=max(dataset),
                             nnz=sum(value != 0)) %>%
                   spread(band, nnz)
+
+    # number of interaction terms
+    sdf <- cbind(sdf, df %>% filter(!is.na(band2)) %>%
+                  summarise(dataset=max(dataset),
+                            nint=sum(value != 0)))
 
     # number of channels used
     sdf <- cbind(sdf, df %>% group_by(channel) %>%
