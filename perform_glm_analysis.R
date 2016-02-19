@@ -1,3 +1,4 @@
+suppressMessages(library(methods))
 suppressMessages(library(glmnet))
 source('glm_helpers.R')
 source('setup_env.R')
