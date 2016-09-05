@@ -29,16 +29,19 @@ Analyses in the paper each correspond to one or more iPython notebooks. Other co
 - __LFP Analysis__: Analysis of local field potential data is contained in the following notebooks:
     - `plot_channel_traces.ipynb`: Plots power in different frequency bands, by channel and normed across channels, aligned to trial start and stop, for a given dataset.
     - `plot_aggregate_channel_traces.ipynb`: Same as `plot_channel_traces`, but aggregates and averages over all datasets.
-    - `plot_channel_traces_by_factor.ipynb`: Plots LFP power across frequency bands, broken out by risk level.
-    - `test_integration_activity.ipynb`: Performs a median split on LFP activity near trial stop and start and tests for statistically significant increases in power over time.
     - `plot_LFP_channel_raster.ipynb`: Plot power for a single channel, single frequency band for each trial in a rastergram-type plot.
-    - `channel_correlation_clustering.ipynb`: Attempt to cluster channels together based on correlations among them.
     - `time_frequency_mean_across_channels.ipynb`: Perform time-frequency analysis on the mean across channels for a given dataset.
     - `contrast_motor_start_vs_stop.ipynb`: Perform a time-frequency analysis of the contrast between identical motor movements at trial start and trial stop.
     - `contrast_reward_vs_no_reward.ipynb`: Perform a time-frequency analysis of the contrasts between rewarded (stop) and unrewarded (pop and control) trials.
-    - `time_frequency_phase_analysis.ipynb` and `time_frequency_phase_amplitude_coupling.ipynb`: Phase and phase-amplitude coupling analysis for the LFP data.
     - `LFP_classifier_data.ipynb`: Fit a sparse logistic classifier to LFP data for a single dataset. (A similar analysis can be performed in batch using `prep_classifier_data.py`, `perform_glm_analysis.R`, and `analyze_lfp_glm_output.R`.)
+
+- __Old Analyses__: These notebooks are extra analyses not in the finished manuscript. They may be interesting but were largely null results and are not actively maintained.
     - `LFP_wavelet_classifier.ipynb`: Fit a sparse logistic classifier based on wavelet features instead of frequency bands. __Requires PyWavelets.__
+    - `time_frequency_phase_analysis.ipynb` and `time_frequency_phase_amplitude_coupling.ipynb`: Phase and phase-amplitude coupling analysis for the LFP data.
+    - `plot_channel_traces_by_risk.ipynb`: Plots LFP power across frequency bands, broken out by risk level.
+    - `channel_correlation_clustering.ipynb`: Attempt to cluster channels together based on correlations among them.
+    - `test_integration_activity.ipynb`: Performs a median split on LFP activity near trial stop and start and tests for statistically significant increases in power over time.
+
 
 ## Dependencies
 
