@@ -10,7 +10,7 @@ import physutils
 
 def make_path(*tup):
     abbr = ['p', 'd', 'c', 'u'][:len(tup)]
-    nstrs = map(str, tup)
+    nstrs = list(map(str, tup))
     pieces = [a + b for a,b in zip(abbr, nstrs)]
     return '/'.join(pieces)
 
@@ -40,7 +40,7 @@ def fetch_all_such(dbname, node, *args, **kwargs):
     if 'keys' in kwargs:
         keys = kwargs['keys']
     else:
-        keys = pdtbl.HDFStore(dbname).keys()
+        keys = list(pdtbl.HDFStore(dbname).keys())
 
     glob = node + '/' + make_path(*args)
     # do really simple regex matching

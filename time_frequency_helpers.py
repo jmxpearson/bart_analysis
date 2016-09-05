@@ -4,8 +4,9 @@ import physutils as phys
 import physutils.bootstrap as boot
 import physutils.tf as tf
 import matplotlib.pyplot as plt
-import dbio
+from . import dbio
 from scipy.interpolate import interp1d
+from functools import reduce
 
 # for plotting, we will flip decreasers
 increasers = [(11, 1), (12, 1), (14, 2), (15, 1), (16, 2), (17, 1), (17, 2),
@@ -54,7 +55,7 @@ def avg_time_freq_arrays(dataframe, times, Tpre, Tpost,
     nchan = dataframe.shape[1]
     spectra = None
 
-    for chan, series in dataframe.iteritems():
+    for chan, series in dataframe.items():
         # get time-frequency matrix for each event
         this_spec0, taxis, faxis = tf._per_event_time_frequency(series,
             callback, times[0], Tpre_x, Tpost_x, complete_only=False, **kwargs)
@@ -83,8 +84,8 @@ def avg_time_freq_arrays(dataframe, times, Tpre, Tpost,
     alllabels = np.concatenate((labels0, labels1))
 
     # remove trials with nans
-    sfinal, lfinal = zip(*[(s, l) for (s, l) in zip(spectra, alllabels)
-                          if not np.any(np.isnan(s))])
+    sfinal, lfinal = list(zip(*[(s, l) for (s, l) in zip(spectra, alllabels)
+                          if not np.any(np.isnan(s))]))
 
     return np.array(sfinal), np.array(lfinal).astype('int'), taxis, faxis
 
@@ -163,17 +164,17 @@ class Normalizer:
         self.method = method
 
     def __call__(self, framelist):
-        all_baselines = map(lambda df: df[slice(*self.timetuple)].mean(), framelist)
+        all_baselines = [df[slice(*self.timetuple)].mean() for df in framelist]
         mean_baseline = reduce(lambda x, y: x.add(y, fill_value=0), all_baselines) / len(framelist)
         if self.method == 'division':
-            return map(lambda x: x.div(mean_baseline), framelist)
+            return [x.div(mean_baseline) for x in framelist]
         elif self.method == 'subtraction':
-            return map(lambda x: x - mean_baseline, framelist)
+            return [x - mean_baseline for x in framelist]
 
 def worker(arguments):
         dbname, event_labels, Tpre, Tpost, freqs, normfun = arguments[:6]
         dtup = arguments[6:]
-        print dtup
+        print(dtup)
 
         lfp = load_and_preprocess(dbname, dtup)
 
@@ -199,9 +200,9 @@ def worker(arguments):
         taxis = None
         faxis = None
         if evtdict[event_labels[0]] is None:
-            print "Dataset {} has no events of type {}".format(dtup, event_labels[0])
+            print("Dataset {} has no events of type {}".format(dtup, event_labels[0]))
         elif evtdict[event_labels[1]] is None:
-            print "Dataset {} has no events of type {}".format(dtup, event_labels[1])
+            print("Dataset {} has no events of type {}".format(dtup, event_labels[1]))
         else:
             this_spectra, this_labels, taxis, faxis = avg_time_freq_arrays(lfp,
                                 [evtdict[event_labels[0]], evtdict[event_labels[1]]],
@@ -225,8 +226,8 @@ def get_spectra_and_labels(dbname, tuplist, event_labels, Tpre, Tpost, freqs, no
     outputs = pool.map(worker, tups)
 
     # remove outputs with empty spectra
-    outputs = filter(lambda x: len(x[0]) > 0, outputs)
-    spectra_list, labels_list, taxis_list, faxis_list = zip(*outputs)
+    outputs = [x for x in outputs if len(x[0]) > 0]
+    spectra_list, labels_list, taxis_list, faxis_list = list(zip(*outputs))
 
     spectra = np.concatenate(spectra_list)
     labels = np.concatenate(labels_list)

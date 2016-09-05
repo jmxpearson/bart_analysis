@@ -8,7 +8,7 @@ import pandas as pd
 import hephys.dbio as dbio
 
 def set_intervals_to_true(df, starts, stops):
-    pairs = zip(starts, stops)
+    pairs = list(zip(starts, stops))
     for p in pairs:
         df[slice(*p)] = 1
     return df
@@ -50,7 +50,7 @@ def make_regressor_elapsed_time(taxis, events):
     reg = pd.Series(0, index=taxis, name='elapsed_time')
     starts = events['start inflating']
     stops = events[['stop inflating', 'popped']].sum(axis=1)
-    pairs = zip(starts, stops)
+    pairs = list(zip(starts, stops))
     for p in pairs:
         slc = slice(*p)
         time = reg[slc].index.values
@@ -80,7 +80,7 @@ def make_regressor_trial_type(taxis, events, trial_type):
     evred = events[events['trial_type'] == trial_type]  # restrict trials
     starts = evred['trial_start']
     stops = evred['trial_over']
-    pairs = zip(starts, stops)
+    pairs = list(zip(starts, stops))
     for p in pairs:
         reg[slice(*p)] = 1
     return reg
@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     for idx, row in setlist.iterrows():
         dtup = tuple(row)
-        print dtup    
+        print(dtup)    
 
         spks = dbio.load_spikes(dbname, dtup)
 

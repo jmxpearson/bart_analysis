@@ -1,8 +1,8 @@
-from __future__ import division
+
 import numpy as np
 import pandas as pd
 import physutils
-import dbio
+from . import dbio
 import warnings
 import os
 
@@ -42,42 +42,42 @@ for name, grp in groups:
 
         dtup = tuple(series.values)
 
-        print dtup
+        print(dtup)
 
         # read in data
-        print 'Reading LFP...'
+        print('Reading LFP...')
         lfp = dbio.fetch_LFP(dbname, *dtup)
 
         # de-mean
-        print 'Removing mean...'
+        print('Removing mean...')
         lfp = lfp.demean()
 
         # break out by frequency bands
-        print 'Filtering by frequency...'
+        print('Filtering by frequency...')
         filters = ['delta', 'theta', 'alpha', 'beta', 'gamma']
         banded = lfp.bandlimit(filters)
 
         # decimate down to 40 Hz
-        print 'Decimating...'
+        print('Decimating...')
         banded = banded.decimate(5)
 
         # get instantaneous power
-        print 'Calculating power...'
+        print('Calculating power...')
         banded = banded.instpwr()
 
         # handle censoring
-        print 'Censoring...'
+        print('Censoring...')
         banded = banded.censor()
 
         # standardize per channel
-        print 'Standardizing regressors...'
+        print('Standardizing regressors...')
         banded = banded.rzscore()
 
         # append to whole dataset
         allchans.append(banded.dataframe)
 
     # concatenate data from all channels
-    print 'Merging channels...'
+    print('Merging channels...')
     groupdata = pd.concat(allchans, axis=1)
     groupdata = physutils.LFPset(groupdata, banded.meta)
 
@@ -87,7 +87,7 @@ for name, grp in groups:
     Tpost = 1.5  # time following event to exclude
 
     # grab events (successful stops = true positives for training)
-    print 'Fetching events (true positives)...'
+    print('Fetching events (true positives)...')
     evt = dbio.fetch(dbname, 'events', *name)
     stops = evt['banked'].dropna()
     pops = evt['popped'].dropna()
@@ -105,7 +105,7 @@ for name, grp in groups:
     truepos['outcome'] = 1
 
     # grab random timepoints (true negatives in training set)
-    print 'Generating true negatives...'
+    print('Generating true negatives...')
     maxT = lfp.index[-1]
     Nrand = truepos.shape[0]  # number to generate: same as number of true positives
     Ncand = 2000  # number to filter down to Nrand
@@ -124,7 +124,7 @@ for name, grp in groups:
     allevt = allevt.set_index('time')
 
     # get running average estimate of power at each timepoint of interest
-    print 'Grabbing data for each event...'
+    print('Grabbing data for each event...')
     meanpwr = pd.rolling_mean(groupdata.dataframe,
         np.ceil(Tpre / dt), min_periods=1)
     meanpwr.index = np.around(meanpwr.index / dt) * dt  # round index to nearest dt
@@ -132,7 +132,7 @@ for name, grp in groups:
     tset = tset.dropna()  # can't send glmnet any row with a NaN
 
     # write out
-    print 'Writing out...'
+    print('Writing out...')
     outdir = os.path.join(os.getcwd(), 'data/')
     outfile = outdir + str(dtup[0]) + '.' + str(dtup[1]) + '.lfpglmdata.csv'
 
