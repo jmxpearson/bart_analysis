@@ -67,7 +67,7 @@ run_glm <- function(dframe, type='binomial', measure="deviance", lambdatype='1se
 }
 
 partition_data <- function(outcome, nfolds) {
-  suppressMessages(require('caret'))
+  suppressMessages(library('caret'))
 
   folds <- createFolds(outcome, nfolds)
 

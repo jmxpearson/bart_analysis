@@ -95,12 +95,13 @@ chanmeans <- function(df) {
 }
 
 extract_coeffs <- function(fitobj) {
+  bandnames <- c('delta', 'theta', 'alpha', 'beta', 'gamma')
   coeffs <- data.frame(value=fitobj$beta)
   coeffs$rowname <- rownames(coeffs)
-  df <- coeffs %>% separate(rowname, into=c("band", "channel"), sep="\\.") %>%
-    select(band, channel, value) %>%
-    mutate(band=factor(band, levels=c('delta', 'theta', 'alpha', 'beta',
-                                      'gamma')))
+  df <- coeffs %>% separate(rowname, into=c("band", "channel", "band2", "channel2"), sep="\\.") %>%
+    select(band, channel, band2, channel2, value) %>%
+    mutate(band=factor(band, levels=bandnames),
+           band2=factor(band2, levels=bandnames))
   return(df)
 }
 
