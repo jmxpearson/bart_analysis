@@ -11,6 +11,8 @@ data {
   vector[Nobs] time;  // time in trial
   matrix[Nobs, M] X;  // regressor matrix
   real<lower=0> dt;  // time bin size
+  int<lower=1> Ntypes;  // number of trial types
+  int<lower=1> ttype[Nobs];  // trial type index
 }
 
 transformed data {
@@ -27,8 +29,12 @@ parameters {
   
   // parameters used to make local half-Cauchy tau_j's
   vector<lower=0>[M] tau_local;
-
-  real alpha_raw;
+  
+  // parameters for hazard functions
+  vector[Ntypes] mm;  // mean
+  vector<lower=0>[Ntypes] ss;  // standard deviation
+  
+  // regression coefficents
   vector[M] beta_raw;
 
   real mu;  // beta0 parameter
@@ -36,22 +42,22 @@ parameters {
 
 transformed parameters {
   vector[M] beta;
-  real alpha;
-  vector[Nobs] talpha;
+  vector[Nobs] hazard;
 
   beta = tau_global * tau_local .* beta_raw;
-  alpha = exp(tau_al * alpha_raw);
   
   for (idx in 1:Nobs) {
-    talpha[idx] = time[idx]^(alpha - 1);
+    hazard[idx] = exp(normal_lpdf(time[idx] | mm[ttype[idx]], ss[ttype[idx]]))/(1 - Phi_approx((time[idx] - mm[ttype[idx]]) / ss[ttype[idx]]));
   }
 }
 
 model {
-  event ~ poisson(alpha * dt * talpha .* exp(mu + X * beta));
+  event ~ poisson(dt * hazard .* exp(mu + X * beta));
 
+  mm ~ normal(3.0, 3.0);
+  ss ~ cauchy(0, 3);
+  
   beta_raw ~ normal(0.0, 1.0);
-  alpha_raw ~ normal(0.0, 1.0);
   
   tau_global ~ cauchy(0, 1);
   tau_local ~ cauchy(0, 1);
