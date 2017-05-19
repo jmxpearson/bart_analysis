@@ -1,4 +1,3 @@
-from __future__ import division
 import numpy as np
 import pandas as pd
 import physutils
@@ -37,21 +36,28 @@ for name, grp in groups:
     filters = ['delta', 'theta', 'alpha', 'beta', 'gamma']
     banded = lfp.bandlimit(filters)
 
-    # decimate down to 40 Hz
-    print('Decimating...')
-    banded = banded.decimate(5).decimate(4)
-
     # get instantaneous power
     print('Calculating power...')
     banded = banded.instpwr()
 
+    print('Smoothing...')
+    Tsmooth = 1  # smoothing window (s)
+    meta = banded.meta
+    wsmooth = int(Tsmooth * meta['sr'])
+    rmean = banded.rolling(wsmooth, min_periods=1, win_type='boxcar').mean()
+    smoothed = physutils.LFPset(rmean, meta)
+
+    # downsample to 10 Hz
+    print('Decimating...')
+    smoothed = smoothed.decimate(5).decimate(4)
+
     # handle censoring
-    # print('Censoring...')
-    # banded = banded.censor()
+    print('Censoring...')
+    smoothed = smoothed.censor()
 
     # standardize per channel
     print('Standardizing regressors...')
-    banded = banded.rzscore()
+    smoothed = smoothed.rzscore()
 
     # grab events (successful stops = true positives for training)
     print('Processing events...')
@@ -75,10 +81,10 @@ for name, grp in groups:
 
     # remove unneeded time points
     chunks = []
-    dt = banded.index[1] - banded.index[0]
+    dt = 1 / meta['sr']
     for trial, row in evt_tmp.iterrows():
         start, stop = row['start'], row['stop']
-        this_chunk = banded.loc[start:stop].copy()
+        this_chunk = smoothed.loc[start:stop].copy()
         if not this_chunk.empty:
             this_chunk['event'] = 0  # no event until the last bin
             this_chunk.iloc[-1, this_chunk.columns.get_loc('event')] = int(row['event'])  # set last bin correctly
@@ -90,10 +96,9 @@ for name, grp in groups:
     # concatenate chunks, make non-power events their own series
     meanpwr = pd.concat(chunks)
     event = meanpwr['event']
-    ttype = pd.get_dummies(meanpwr['ttype'])
+    # ttype = pd.get_dummies(meanpwr['ttype'])
+    ttype = meanpwr['ttype']
     time_in_trial = meanpwr['rel_time']
-    ttype.columns = ['ttype' + str(idx) for idx in ttype.columns]
-    ttype = ttype.drop('ttype1', axis=1)
     meanpwr = meanpwr.drop(['event', 'ttype', 'rel_time'], axis=1)
 
     # standardize

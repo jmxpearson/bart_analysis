@@ -1,5 +1,5 @@
 """
-For each patient, dataset, unit, prepare a dataframe to be used to fit a 
+For each patient, dataset, unit, prepare a dataframe to be used to fit a
 generalized linear model.
 """
 import numpy as np
@@ -55,7 +55,7 @@ def make_regressor_elapsed_time(taxis, events):
         slc = slice(*p)
         time = reg[slc].index.values
         # log on this scale is linear on firing rate scale
-        reg[slc] = np.log(time - time[0] + 1)  
+        reg[slc] = np.log(time - time[0] + 1)
     return reg
 
 def make_regressor_is_banked(taxis, events):
@@ -104,12 +104,12 @@ if __name__ == '__main__':
     # name of database to use
     dbname = os.path.join(os.getcwd(), 'data/bart.hdf5')
 
-    # first, get a list of lfp channels
+    # first, get a list of spike channels
     setlist = pd.read_hdf(dbname, '/meta/spklist')
 
     for idx, row in setlist.iterrows():
         dtup = tuple(row)
-        print(dtup)    
+        print(dtup)
 
         spks = dbio.load_spikes(dbname, dtup)
 
