@@ -41,7 +41,7 @@ for name, grp in groups:
     banded = banded.instpwr()
 
     print('Smoothing...')
-    Tsmooth = 1  # smoothing window (s)
+    Tsmooth = 0.5  # smoothing window (s)
     meta = banded.meta
     wsmooth = int(Tsmooth * meta['sr'])
     rmean = banded.rolling(wsmooth, min_periods=1, win_type='boxcar').mean()
@@ -55,9 +55,18 @@ for name, grp in groups:
     print('Censoring...')
     smoothed = smoothed.censor()
 
-    # standardize per channel
+    # log power and standardize per channel
     print('Standardizing regressors...')
-    smoothed = smoothed.rzscore()
+    meta = smoothed.meta
+    smoothed = physutils.LFPset(np.log(smoothed), meta).rzscore()
+
+    # mean across channels by band (i.e., geometric mean)
+    # print('Mean across channels...')
+    # chan_cols = [col for col in smoothed.columns if '.' in col]
+    # band = {col: col.split('.')[0] for col in chan_cols}
+    # rest = smoothed[smoothed.columns.difference(chan_cols)]
+    # chan_means = smoothed.groupby(by=band, axis=1).mean()
+    # smoothed = pd.concat([rest, chan_means], axis=1)
 
     # grab events (successful stops = true positives for training)
     print('Processing events...')
@@ -86,6 +95,7 @@ for name, grp in groups:
         start, stop = row['start'], row['stop']
         this_chunk = smoothed.loc[start:stop].copy()
         if not this_chunk.empty:
+            this_chunk['trial'] = trial
             this_chunk['event'] = 0  # no event until the last bin
             this_chunk.iloc[-1, this_chunk.columns.get_loc('event')] = int(row['event'])  # set last bin correctly
             this_chunk['ttype'] = int(row['trial_type'])
@@ -99,10 +109,8 @@ for name, grp in groups:
     # ttype = pd.get_dummies(meanpwr['ttype'])
     ttype = meanpwr['ttype']
     time_in_trial = meanpwr['rel_time']
-    meanpwr = meanpwr.drop(['event', 'ttype', 'rel_time'], axis=1)
-
-    # standardize
-    meanpwr = meanpwr.apply(lambda x: (x - x.mean())/x.std())
+    trial = meanpwr['trial']
+    meanpwr = meanpwr.drop(['event', 'ttype', 'rel_time', 'trial'], axis=1)
 
     # make interaction terms and squares
     int_terms = []
@@ -124,7 +132,7 @@ for name, grp in groups:
     #         int_terms.append(col)
 
 
-    trainset = pd.concat([event, time_in_trial, ttype, meanpwr] + int_terms, axis=1, join='inner')
+    trainset = pd.concat([event, time_in_trial, ttype, trial, meanpwr] + int_terms, axis=1, join='inner')
     trainset = trainset.dropna()  # can't send glmnet any row with a NaN
 
     # write out

@@ -26,14 +26,14 @@ transformed data {
 parameters {
   // parameters used to make a half-Cauchy tau_s
   real<lower=0> tau_global;
-  
+
   // parameters used to make local half-Cauchy tau_j's
   vector<lower=0>[M] tau_local;
-  
+
   // parameters for hazard functions
   vector[Ntypes] mm;  // mean
   vector<lower=0>[Ntypes] ss;  // standard deviation
-  
+
   // regression coefficents
   vector[M] beta_raw;
 
@@ -45,7 +45,7 @@ transformed parameters {
   vector[Nobs] hazard;
 
   beta = tau_global * tau_local .* beta_raw;
-  
+
   for (idx in 1:Nobs) {
     hazard[idx] = exp(normal_lpdf(time[idx] | mm[ttype[idx]], ss[ttype[idx]]))/(1 - Phi_approx((time[idx] - mm[ttype[idx]]) / ss[ttype[idx]]));
   }
@@ -56,11 +56,11 @@ model {
 
   mm ~ normal(3.0, 3.0);
   ss ~ cauchy(0, 3);
-  
+
   beta_raw ~ normal(0.0, 1.0);
-  
+
   tau_global ~ cauchy(0, 1);
   tau_local ~ cauchy(0, 1);
 
-  mu ~ normal(0.0, tau_mu);  
+  mu ~ normal(0.0, tau_mu);
 }

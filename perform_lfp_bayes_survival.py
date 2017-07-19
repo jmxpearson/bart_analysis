@@ -27,7 +27,7 @@ def run_stan(dtup):
     event = dat.event
     time = dat['rel_time']
     ttype = dat['ttype']
-    X = dat.drop(['event', 'rel_time', 'ttype'], axis=1)
+    X = dat.drop(['event', 'rel_time', 'ttype', 'trial'], axis=1)
     dt = X.index[1] - X.index[0]
     Nobs, M = X.shape
     Ntypes = len(ttype.unique())
@@ -60,9 +60,10 @@ def run_stan(dtup):
 
     return None
 
-subjs = pd.read_csv('data/lfp_channel_file.csv', header=None).drop(2, axis=1).drop_duplicates()
+if __name__ == '__main__':
+    subjs = pd.read_csv('data/lfp_channel_file.csv', header=None).drop(2, axis=1).drop_duplicates()
 
-for dtup in [(18, 1)]:
-# for _, dtup in subjs.iterrows():
-    print("Subject {}, Set {}".format(dtup[0], dtup[1]))
-    run_stan(dtup)
+    # for dtup in [(18, 1)]:
+    for _, dtup in subjs.iterrows():
+        print("Subject {}, Set {}".format(dtup[0], dtup[1]))
+        run_stan(dtup)
