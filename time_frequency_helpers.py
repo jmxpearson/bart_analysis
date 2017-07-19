@@ -4,7 +4,7 @@ import physutils as phys
 import physutils.bootstrap as boot
 import physutils.tf as tf
 import matplotlib.pyplot as plt
-from . import dbio
+import dbio
 from scipy.interpolate import interp1d
 from functools import reduce
 
@@ -14,6 +14,10 @@ def load_and_preprocess(dbname, dtup):
     """
     # load data
     lfp = dbio.fetch_all_such_LFP(dbname, *dtup)
+
+    # remove global mean
+    if lfp.shape[1] > 1:
+        lfp = lfp.demean_global()
 
     # handle FHC recordings
     standard_sr = 200.
