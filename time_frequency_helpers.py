@@ -30,10 +30,10 @@ def load_and_preprocess(dbname, dtup):
                               index=tnew, columns=lfp.columns)
         lfp = phys.LFPset(new_lfp)
 
-    # censor and robustly zscore
-    lfpmz = lfp.censor().rzscore()
+    # censor
+    lfpc = lfp.censor()
 
-    return lfpmz
+    return lfpc
 
 def avg_time_freq_arrays(dataframe, times, Tpre, Tpost,
                          expand=1.0, method='wav', normfun=None, **kwargs):
