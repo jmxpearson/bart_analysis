@@ -3,7 +3,7 @@ Analysis code and figure generation for intracranial recording experiment using 
 
 ## Data
 
-Data are available [here](TBD). The data are in a single HDF5 file with top-level directories
+Data are available [here](http://dx.doi.org/10.5061/dryad.54tp8q5). The data are in a single HDF5 file with top-level directories
 
 - `meta`: contains data for censoring, events, and valid lfp and spike channels. This is replicated in csv files in the `data` subdirectory of the current repository.
 
